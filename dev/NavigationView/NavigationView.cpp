@@ -608,7 +608,21 @@ void NavigationView::OnFlyoutClosing(const winrt::IInspectable& sender, const wi
     if (m_moveTopNavOverflowItemOnFlyoutClose)
     {
         m_moveTopNavOverflowItemOnFlyoutClose = false;
-        SelectandMoveOverflowItem(SelectedItem(), m_selectionModel.SelectedIndex(), false);
+
+        auto const selectedIndex = m_selectionModel.SelectedIndex();
+        if (selectedIndex.GetSize() > 0)
+        {
+            if (auto const firstContainer = GetContainerForIndex(selectedIndex.GetAt(0)))
+            {
+                if (auto const firstNVI = firstContainer.try_as<winrt::NavigationViewItem>())
+                {
+                    // We want to collapse the top level item before we move it
+                    firstNVI.IsExpanded(false);
+                }
+            }
+
+            SelectandMoveOverflowItem(SelectedItem(), selectedIndex, false);
+        }
     }
 }
 

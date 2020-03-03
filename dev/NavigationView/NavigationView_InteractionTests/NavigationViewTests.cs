@@ -4284,6 +4284,32 @@ namespace Windows.UI.Xaml.Tests.MUXControls.InteractionTests
             }
         }
 
+        [TestMethod]
+        [TestProperty("TestSuite", "D")]
+        public void SelectingNonTopLevelItemInOverflowMovesItem()
+        {
+            using (var setup = new TestSetupHelper(new[] { "NavigationView Tests", "HierarchicalNavigationView Markup Test" }))
+            {
+                TextBlock displayModeTextBox = new TextBlock(FindElement.ByName("SelectedItemLabel"));
+
+                Log.Comment("Put NavigationView into Left Compact Mode.");
+                var panelDisplayModeComboBox = new ComboBox(FindElement.ByName("PaneDisplayModeCombobox"));
+                panelDisplayModeComboBox.SelectItemByName("Top");
+                Wait.ForIdle();
+
+                InvokeOverflowButton();
+
+                var item = FindElement.ByName("Menu Item 29 (Selectable)");
+                InputHelper.LeftClick(item);
+                Wait.ForIdle();
+
+                var getSelectItemButton = new Button(FindElement.ByName("GetSelectedItemLabelButton"));
+                getSelectItemButton.Invoke();
+                Wait.ForIdle();
+                Verify.Equals(displayModeTextBox.DocumentText, "Menu Item 29 (Selectable)");
+            }
+        }
+
         private void EnsurePaneHeaderCanBeModifiedHelper(RegressionTestType navviewMode)
         {
             if (!PlatformConfiguration.IsOsVersionGreaterThanOrEqual(OSVersion.Redstone2))
